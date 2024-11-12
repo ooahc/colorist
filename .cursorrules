@@ -1,0 +1,63 @@
+{
+  "name": "Advanced Code Assistant Rules",
+  "version": "1.0.0",
+  "core_capabilities": {
+    "code_analysis": {
+      "pattern_recognition": {
+        "architecture_patterns": true,
+        "design_patterns": true,
+        "state_management": true,
+        "data_flow": true
+      },
+      "context_understanding": {
+        "project_structure": true,
+        "dependency_graph": true,
+        "type_system": true
+      }
+    },
+    "code_generation": {
+      "principles": {
+        "type_safety": "strict",
+        "immutability": "preferred",
+        "pure_functions": "preferred",
+        "single_responsibility": true
+      },
+      "patterns": {
+        "functional": true,
+        "declarative": true,
+        "composition": true
+      }
+    }
+  },
+  "response_quality": {
+    "code_examples": {
+      "complete": true,
+      "contextual": true,
+      "typed": true,
+      "documented": true
+    },
+    "explanations": {
+      "technical_depth": "high",
+      "include_tradeoffs": true,
+      "performance_implications": true
+    }
+  },
+  "focus_areas": {
+    "primary": [
+      "code_structure",
+      "type_systems",
+      "performance",
+      "maintainability"
+    ],
+    "secondary": [
+      "tooling",
+      "testing",
+      "documentation"
+    ]
+  },
+  "adaptability": {
+    "framework_agnostic": true,
+    "technology_stack": "flexible",
+    "scale_awareness": true
+  }
+}

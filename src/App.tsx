@@ -11,12 +11,12 @@ interface ColorData {
 }
 
 function App() {
-  const [colorMode, setColorMode] = useState<ColorMode>('HSL');
   const [colorList, setColorList] = useState('');
   const [columns, setColumns] = useState(6);
   const [cardHeight, setCardHeight] = useState(160);
   const [fontSize, setFontSize] = useState(14);
   const [colors, setColors] = useState<ColorData[]>([]);
+  const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -50,6 +50,24 @@ function App() {
 
   const displayColors = colors.length > 0 ? colors : defaultColors;
 
+  const handleColorChange = (index: number, newColor: string) => {
+    const updatedColors = [...colors];
+    updatedColors[index] = {
+      ...updatedColors[index],
+      value: newColor
+    };
+    setColors(updatedColors);
+
+    const lines = colorList.split('\n');
+    lines[index] = `[title=${updatedColors[index].name};color=${newColor}]`;
+    setColorList(lines.join('\n'));
+    setSelectedColorIndex(index);
+  };
+
+  const handleCardBlur = () => {
+    setSelectedColorIndex(null);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-4 shadow-lg">
@@ -78,21 +96,6 @@ function App() {
             <h2 className="text-lg font-semibold mb-4">Color Settings</h2>
             
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Color Mode
-                </label>
-                <select 
-                  className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={colorMode}
-                  onChange={(e) => setColorMode(e.target.value as ColorMode)}
-                >
-                  <option value="HSL">HSL</option>
-                  <option value="RGB">RGB</option>
-                  <option value="HEX">HEX</option>
-                </select>
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Color List
@@ -131,6 +134,9 @@ function App() {
                 name={color.name}
                 height={cardHeight}
                 fontSize={fontSize}
+                onColorChange={(newColor) => handleColorChange(idx, newColor)}
+                isSelected={selectedColorIndex === idx}
+                onBlur={handleCardBlur}
               />
             ))}
           </div>

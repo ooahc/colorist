@@ -1,22 +1,105 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface ColorCardProps {
   color: string;
   name: string;
   height: number;
   fontSize: number;
+  onColorChange: (newColor: string) => void;
+  isSelected?: boolean;
+  onBlur?: () => void;
 }
 
-export const ColorCard: React.FC<ColorCardProps> = ({ color, name, height, fontSize }) => {
+export const ColorCard: React.FC<ColorCardProps> = ({ 
+  color, 
+  name, 
+  height, 
+  fontSize,
+  onColorChange,
+  isSelected,
+  onBlur 
+}) => {
+  const colorInputRef = useRef<HTMLInputElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (cardRef.current && !cardRef.current.contains(event.target as Node)) {
+        onBlur?.();
+      }
+    };
+
+    if (isSelected) {
+      document.addEventListener('click', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isSelected, onBlur]);
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    // 创建一个新的 MouseEvent
+    const clickEvent = new MouseEvent('click', {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      bubbles: true,
+      cancelable: true,
+      view: window
+    });
+
+    // 设置颜色选择器的位置并触发点击
+    if (colorInputRef.current) {
+      const input = colorInputRef.current;
+      input.style.position = 'fixed';
+      input.style.left = `${e.clientX}px`;
+      input.style.top = `${e.clientY}px`;
+      input.style.opacity = '0';
+      input.style.pointerEvents = 'none';
+      input.dispatchEvent(clickEvent);
+    }
+  };
+
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onColorChange(e.target.value);
+    setTimeout(() => {
+      onBlur?.();
+      // 重置颜色选择器位置
+      if (colorInputRef.current) {
+        colorInputRef.current.style.position = 'absolute';
+        colorInputRef.current.style.left = '0';
+        colorInputRef.current.style.top = '0';
+      }
+    }, 0);
+  };
+
   return (
     <div 
-      className="rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200"
+      ref={cardRef}
+      className={`rounded-lg overflow-hidden border transition-all duration-200 ${
+        isSelected 
+          ? 'border-blue-500 shadow-lg' 
+          : 'border-gray-200 shadow-sm hover:shadow-md'
+      }`}
       style={{ height }}
+      onClick={handleClick}
     >
-      <div 
-        className="h-4/5 transition-colors duration-200" 
-        style={{ backgroundColor: color }}
-      />
+      <div className="h-4/5 relative">
+        <div 
+          className="h-full w-full transition-colors duration-200" 
+          style={{ backgroundColor: color }}
+        />
+        <input
+          ref={colorInputRef}
+          type="color"
+          value={color}
+          onChange={handleColorChange}
+          className="absolute opacity-0 pointer-events-none"
+          style={{ top: 0, left: 0 }}
+        />
+      </div>
       <div 
         className="h-1/5 p-2 bg-white flex items-center justify-center"
         style={{ fontSize }}
