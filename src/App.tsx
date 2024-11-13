@@ -132,7 +132,7 @@ function App() {
             <Palette className="h-8 w-8" />
             <h1 className="text-xl font-semibold">
               疯狂的调色盘
-              <span className="ml-2 font-normal text-[hsl(0,0%,75%)] font-logo">· by chao</span>
+              <span className="ml-2 font-normal text-[hsl(0,0%,60%)] font-logo">· by charles</span>
             </h1>
           </div>
           <div className="flex gap-4">
