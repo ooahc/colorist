@@ -64,6 +64,20 @@ function App() {
   const displayColors = colors.length > 0 ? colors : defaultColors;
 
   const handleColorChange = (index: number, newColor: string) => {
+    if (colors.length === 0) {
+      // 如果是在默认颜色上操作，先将默认颜色复制到 colors 中
+      setColors([...defaultColors]);
+      setTimeout(() => {
+        const updatedColors = [...defaultColors];
+        updatedColors[index] = {
+          ...updatedColors[index],
+          value: newColor
+        };
+        setColors(updatedColors);
+      }, 0);
+      return;
+    }
+
     const updatedColors = [...colors];
     updatedColors[index] = {
       ...updatedColors[index],
@@ -109,6 +123,17 @@ function App() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [isPopoverVisible]);
+
+  const handleInitialCardClick = (color: string) => {
+    setColorList(color);
+  };
+
+  const initialColors = [
+    { color: '#FF6B6B', name: 'Coral Red' },
+    { color: '#4ECDC4', name: 'Medium Turquoise' },
+    { color: '#45B7D1', name: 'Summer Sky' },
+    // ... 其他初始颜色
+  ];
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
