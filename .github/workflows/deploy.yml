@@ -18,16 +18,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm install
+          npm list # 列出安装的依赖
 
       - name: Build
-        run: npm run build
+        run: |
+          npm run build
+          ls -la dist # 列出构建文件
 
-      - name: Add .nojekyll file
-        run: touch dist/.nojekyll
+      - name: Debug Info
+        run: |
+          pwd
+          ls -la
+          echo "Current directory content:"
+          ls -R dist/
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
