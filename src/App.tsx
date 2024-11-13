@@ -1,10 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Minus, Maximize2, X, Palette, InfoIcon } from 'lucide-react';
 import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
-import { getColorName } from './utils/colorNames';
-
-type ColorMode = 'HSL' | 'RGB' | 'HEX';
 
 interface ColorData {
   name: string;

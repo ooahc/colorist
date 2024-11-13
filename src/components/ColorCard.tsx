@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from 'react';
-import { getColorName } from '../utils/colorNames';
 
 interface ColorCardProps {
   color: string;
@@ -39,7 +38,7 @@ export const ColorCard: React.FC<ColorCardProps> = ({
     };
   }, [isSelected, onBlur]);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = () => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (rect && colorInputRef.current) {
       const scrollX = window.scrollX;
@@ -50,7 +49,7 @@ export const ColorCard: React.FC<ColorCardProps> = ({
       colorInputRef.current.style.top = `${rect.top + scrollY}px`;
       colorInputRef.current.click();
     }
-    setIsSelected(true);
+    onColorChange(color);
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
