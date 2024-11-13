@@ -98,7 +98,7 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
-      <header className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-4 shadow-lg">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-4 shadow-lg">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <Palette className="h-8 w-8" />
@@ -118,68 +118,72 @@ function App() {
         </div>
       </header>
 
-      <div className="flex flex-1 gap-6 p-6 max-w-7xl mx-auto w-full">
-        <aside className="w-80 space-y-6">
-          <div className="bg-white p-4 rounded-lg shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold">Color Settings</h2>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Color List
-                  </label>
-                  <div className="relative group">
-                    <InfoIcon 
-                      className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help transition-colors" 
-                    />
-                    <div className="invisible group-hover:visible absolute left-full top-1/2 -translate-y-1/2 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
-                      {placeholderText}
-                      <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45" />
+      <div className="flex pt-[72px] h-screen">
+        <aside className="fixed left-0 top-[72px] bottom-0 w-80 p-6 overflow-y-auto">
+          <div className="space-y-6">
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Color Settings</h2>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Color List
+                    </label>
+                    <div className="relative group">
+                      <InfoIcon 
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help transition-colors" 
+                      />
+                      <div className="invisible group-hover:visible absolute left-full top-1/2 -translate-y-1/2 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
+                        {placeholderText}
+                        <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45" />
+                      </div>
                     </div>
                   </div>
+                  <textarea
+                    className="w-full h-40 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                    placeholder={placeholderText}
+                    value={colorList}
+                    onChange={(e) => handleColorListChange(e.target.value)}
+                  />
                 </div>
-                <textarea
-                  className="w-full h-40 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-                  placeholder={placeholderText}
-                  value={colorList}
-                  onChange={(e) => handleColorListChange(e.target.value)}
-                />
               </div>
             </div>
-          </div>
 
-          <Controls
-            columns={columns}
-            setColumns={setColumns}
-            cardHeight={cardHeight}
-            setCardHeight={setCardHeight}
-            fontSize={fontSize}
-            setFontSize={setFontSize}
-          />
+            <Controls
+              columns={columns}
+              setColumns={setColumns}
+              cardHeight={cardHeight}
+              setCardHeight={setCardHeight}
+              fontSize={fontSize}
+              setFontSize={setFontSize}
+            />
+          </div>
         </aside>
 
-        <main className="flex-1 bg-white p-6 rounded-lg shadow-sm">
-          <div 
-            className="grid gap-4" 
-            style={{ 
-              gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` 
-            }}
-          >
-            {displayColors.map((color, idx) => (
-              <ColorCard
-                key={idx}
-                color={color.value}
-                name={color.name}
-                height={cardHeight}
-                fontSize={fontSize}
-                onColorChange={(newColor) => handleColorChange(idx, newColor)}
-                isSelected={selectedColorIndex === idx}
-                onBlur={handleCardBlur}
-              />
-            ))}
+        <main className="ml-80 flex-1 p-6">
+          <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div 
+              className="grid gap-4" 
+              style={{ 
+                gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` 
+              }}
+            >
+              {displayColors.map((color, idx) => (
+                <ColorCard
+                  key={idx}
+                  color={color.value}
+                  name={color.name}
+                  height={cardHeight}
+                  fontSize={fontSize}
+                  onColorChange={(newColor) => handleColorChange(idx, newColor)}
+                  isSelected={selectedColorIndex === idx}
+                  onBlur={handleCardBlur}
+                />
+              ))}
+            </div>
           </div>
         </main>
       </div>
