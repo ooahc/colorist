@@ -89,9 +89,9 @@ function App() {
     setSelectedColorIndex(null);
   };
 
-  const placeholderText = `Enter colors in any of these formats:
+  const placeholderText = `以下任意格式可生成颜色卡片：
 1. title=MyColor;color=#fff
-2. title=Blue;color=rgb(0,0,255)
+2. title=Blue;color=#000
 3. #ff0000
 4. rgb(0,255,0)
 5. hsl(240,100%,50%)`;
@@ -102,7 +102,7 @@ function App() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <Palette className="h-8 w-8" />
-            <h1 className="text-2xl font-bold">Color Value Viewer</h1>
+            <h1 className="text-2xl font-bold">疯狂的调色盘</h1>
           </div>
           <div className="flex gap-4">
             <button className="hover:bg-white/10 p-2 rounded-full transition-colors">
@@ -123,7 +123,7 @@ function App() {
           <div className="space-y-6">
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">Color Settings</h2>
+                <h2 className="text-lg font-semibold">显示设置</h2>
               </div>
               
               <div className="space-y-4">
