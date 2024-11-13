@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { getColorName } from '../utils/colorNames';
 
 interface ColorCardProps {
   color: string;
@@ -39,27 +40,17 @@ export const ColorCard: React.FC<ColorCardProps> = ({
   }, [isSelected, onBlur]);
 
   const handleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    
-    // 创建一个新的 MouseEvent
-    const clickEvent = new MouseEvent('click', {
-      clientX: e.clientX,
-      clientY: e.clientY,
-      bubbles: true,
-      cancelable: true,
-      view: window
-    });
-
-    // 设置颜色选择器的位置并触发点击
-    if (colorInputRef.current) {
-      const input = colorInputRef.current;
-      input.style.position = 'fixed';
-      input.style.left = `${e.clientX}px`;
-      input.style.top = `${e.clientY}px`;
-      input.style.opacity = '0';
-      input.style.pointerEvents = 'none';
-      input.dispatchEvent(clickEvent);
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (rect && colorInputRef.current) {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+      
+      colorInputRef.current.style.position = 'fixed';
+      colorInputRef.current.style.left = `${rect.right + scrollX}px`;
+      colorInputRef.current.style.top = `${rect.top + scrollY}px`;
+      colorInputRef.current.click();
     }
+    setIsSelected(true);
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,8 +60,8 @@ export const ColorCard: React.FC<ColorCardProps> = ({
       // 重置颜色选择器位置
       if (colorInputRef.current) {
         colorInputRef.current.style.position = 'absolute';
-        colorInputRef.current.style.left = '0';
-        colorInputRef.current.style.top = '0';
+        colorInputRef.current.style.left = '-9999px'; // 移出视图
+        colorInputRef.current.style.top = '-9999px';  // 移出视图
       }
     }, 0);
   };
@@ -101,7 +92,7 @@ export const ColorCard: React.FC<ColorCardProps> = ({
         />
       </div>
       <div 
-        className="h-1/5 p-2 bg-white flex items-center justify-center"
+        className="h-1/5 p-2 bg-white flex flex-col items-center justify-center"
         style={{ fontSize }}
       >
         <code className="font-mono text-gray-700 truncate max-w-full">

@@ -1,11 +1,14 @@
 import React from 'react';
 
-interface ControlsProps {
+type ControlValue = {
   columns: number;
-  setColumns: (value: number) => void;
   cardHeight: number;
-  setCardHeight: (value: number) => void;
   fontSize: number;
+}
+
+interface ControlsProps extends ControlValue {
+  setColumns: (value: number) => void;
+  setCardHeight: (value: number) => void;
   setFontSize: (value: number) => void;
 }
 

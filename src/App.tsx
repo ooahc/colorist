@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Minus, Maximize2, X, Palette } from 'lucide-react';
+import { Minus, Maximize2, X, Palette, InfoIcon } from 'lucide-react';
 import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
+import { getColorName } from './utils/colorNames';
 
 type ColorMode = 'HSL' | 'RGB' | 'HEX';
 
@@ -27,24 +28,37 @@ function App() {
     { name: 'Purple', value: 'hsl(300, 100%, 50%)' },
   ];
 
-  const handleColorListChange = (newValue: string) => {
-    setColorList(newValue);
-    const colors = newValue.split('\n')
-      .filter(Boolean)
-      .map(line => {
-        const match = line.match(/\[title=(.*?);color=(.*?)\]/);
-        
-        if (match) {
-          const [_, title, colorValue] = match;
+  const handleColorListChange = (value: string) => {
+    const lines = value.split('\n');
+    const colors = lines
+      .map(inputLine => {
+        const trimmedLine = inputLine.trim();
+        if (!trimmedLine) return null;
+
+        // 匹配完整格式 title=name;color=value
+        const formatMatch = trimmedLine.match(/^title=(.*?);color=(.+)$/);
+        if (formatMatch) {
           return {
-            name: title,
-            value: colorValue
+            name: formatMatch[1].trim(),
+            value: formatMatch[2].trim()
           };
         }
+        
+        // 匹配直接的颜色值（支持更多格式）
+        const isColorValue = /^(#([0-9a-f]{3}|[0-9a-f]{6})|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\))$/i;
+        
+        if (isColorValue.test(trimmedLine)) {
+          return {
+            name: getColorName(trimmedLine),
+            value: trimmedLine
+          };
+        }
+        
         return null;
       })
       .filter((color): color is ColorData => color !== null);
     
+    setColorList(value);
     setColors(colors);
   };
 
@@ -58,15 +72,31 @@ function App() {
     };
     setColors(updatedColors);
 
-    const lines = colorList.split('\n');
-    lines[index] = `[title=${updatedColors[index].name};color=${newColor}]`;
-    setColorList(lines.join('\n'));
+    if (colorList) {
+      const lines = colorList.split('\n');
+      if (lines[index]) {
+        const formatMatch = lines[index].match(/title=(.*?);color=/);
+        if (formatMatch) {
+          lines[index] = `title=${formatMatch[1]};color=${newColor}`;
+        } else {
+          lines[index] = newColor;
+        }
+        setColorList(lines.join('\n'));
+      }
+    }
     setSelectedColorIndex(index);
   };
 
   const handleCardBlur = () => {
     setSelectedColorIndex(null);
   };
+
+  const placeholderText = `Enter colors in any of these formats:
+1. title=MyColor;color=#fff
+2. title=Blue;color=rgb(0,0,255)
+3. #ff0000
+4. rgb(0,255,0)
+5. hsl(240,100%,50%)`;
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -93,16 +123,29 @@ function App() {
       <div className="flex flex-1 gap-6 p-6 max-w-7xl mx-auto w-full">
         <aside className="w-80 space-y-6">
           <div className="bg-white p-4 rounded-lg shadow-sm">
-            <h2 className="text-lg font-semibold mb-4">Color Settings</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Color Settings</h2>
+            </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Color List
-                </label>
+                <div className="flex items-center gap-2 mb-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Color List
+                  </label>
+                  <div className="relative group">
+                    <InfoIcon 
+                      className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help transition-colors" 
+                    />
+                    <div className="invisible group-hover:visible absolute left-full top-1/2 -translate-y-1/2 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
+                      {placeholderText}
+                      <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45" />
+                    </div>
+                  </div>
+                </div>
                 <textarea
                   className="w-full h-40 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-                  placeholder="Enter colors (format: [title=name;color=value])"
+                  placeholder={placeholderText}
                   value={colorList}
                   onChange={(e) => handleColorListChange(e.target.value)}
                 />
