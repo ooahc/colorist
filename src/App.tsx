@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Minus, Maximize2, X, Palette, InfoIcon } from 'lucide-react';
 import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
+import { getColorName } from './utils/colorNames';
 
 interface ColorData {
   name: string;
