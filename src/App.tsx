@@ -112,7 +112,7 @@ function App() {
 5. hsl(240,100%,50%)`;
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       if (isPopoverVisible) {
         setIsPopoverVisible(false);
       }
@@ -123,17 +123,6 @@ function App() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [isPopoverVisible]);
-
-  const handleInitialCardClick = (color: string) => {
-    setColorList(color);
-  };
-
-  const initialColors = [
-    { color: '#FF6B6B', name: 'Coral Red' },
-    { color: '#4ECDC4', name: 'Medium Turquoise' },
-    { color: '#45B7D1', name: 'Summer Sky' },
-    // ... 其他初始颜色
-  ];
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
