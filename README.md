@@ -1,9 +1,7 @@
 # Color Card Generator
-
 A React application for generating and managing color cards with real-time preview.
 
 ## Features
-
 - Interactive color cards with live editing
 - Customizable grid layout
 - Adjustable card size and font settings
@@ -18,9 +16,7 @@ npm run dev
 Build for production
 npm run build
 
-
 ## Development
-
 - Built with React + TypeScript
 - Styled using Tailwind CSS
 - Bundled with Vite
@@ -32,7 +28,5 @@ src/
 ├── App.tsx # Main application component
 └── main.tsx # Application entry point
 
-
 ## License
-
 MIT
