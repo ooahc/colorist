@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Minus, Maximize2, X, Palette, InfoIcon } from 'lucide-react';
 import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
@@ -16,6 +16,7 @@ function App() {
   const [fontSize, setFontSize] = useState(14);
   const [colors, setColors] = useState<ColorData[]>([]);
   const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
+  const [isPopoverVisible, setIsPopoverVisible] = useState(false);
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -96,6 +97,19 @@ function App() {
 4. rgb(0,255,0)
 5. hsl(240,100%,50%)`;
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isPopoverVisible) {
+        setIsPopoverVisible(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isPopoverVisible]);
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-4 shadow-lg">
@@ -119,7 +133,7 @@ function App() {
       </header>
 
       <div className="flex pt-[72px] h-screen">
-        <aside className="fixed left-0 top-[72px] bottom-0 w-80 p-6 overflow-y-auto">
+        <aside className="fixed bottom-0 top-[72px] left-5 w-[408px] overflow-y-auto p-6">
           <div className="space-y-6">
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-4">
@@ -132,14 +146,20 @@ function App() {
                     <label className="block text-sm font-medium text-gray-700">
                       Color List
                     </label>
-                    <div className="relative group">
+                    <div className="relative">
                       <InfoIcon 
-                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-help transition-colors" 
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsPopoverVisible(!isPopoverVisible);
+                        }}
                       />
-                      <div className="invisible group-hover:visible absolute left-full top-1/2 -translate-y-1/2 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
-                        {placeholderText}
-                        <div className="absolute -left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-800 rotate-45" />
-                      </div>
+                      {isPopoverVisible && (
+                        <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
+                          {placeholderText}
+                          <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
+                        </div>
+                      )}
                     </div>
                   </div>
                   <textarea
@@ -163,7 +183,7 @@ function App() {
           </div>
         </aside>
 
-        <main className="ml-80 flex-1 p-6">
+        <main className="ml-[448px] flex-1 p-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div 
               className="grid gap-4" 
