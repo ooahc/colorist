@@ -116,7 +116,10 @@ function App() {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <Palette className="h-8 w-8" />
-            <h1 className="text-2xl font-bold">疯狂的调色盘</h1>
+            <h1 className="text-xl font-semibold">
+              疯狂的调色盘
+              <span className="ml-2 font-normal text-[hsl(0,0%,75%)] font-logo">· by chao</span>
+            </h1>
           </div>
           <div className="flex gap-4">
             <button className="hover:bg-white/10 p-2 rounded-full transition-colors">

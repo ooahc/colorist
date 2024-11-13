@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --font-logo: 'Aharoni';
+    --font-code: 'Roboto Mono';
+    --font-heading: 'Arial';
+  }
+  
+  /* 使用字体变量的类 */
+  .font-logo {
+    font-family: var(--font-logo);
+  }
+}
