@@ -22,11 +22,13 @@ npm run build
 - Bundled with Vite
 
 ## Project Structure
+```
 src/
 ├── components/ # React components
 ├── types/ # TypeScript definitions
 ├── App.tsx # Main application component
 └── main.tsx # Application entry point
+```
 
 ## License
 MIT
