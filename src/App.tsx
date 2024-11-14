@@ -261,6 +261,7 @@ function App() {
                     placeholder={placeholderText}
                     value={colorList}
                     onChange={(e) => handleColorListChange(e.target.value)}
+                    wrap="off"
                   />
                 </div>
               </div>
