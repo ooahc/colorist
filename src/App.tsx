@@ -139,7 +139,7 @@ function App() {
 
     switch (targetMode) {
       case 'rgb':
-        return `rgb(${r}, ${g}, ${b})`;
+        return `rgb(${r},${g},${b})`;
       case 'hex':
         return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
       case 'hsl':
@@ -161,7 +161,7 @@ function App() {
           }
           h *= 60;
         }
-        return `hsl(${Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+        return `hsl(${Math.round(h)},${Math.round(s * 100)}%,${Math.round(l * 100)}%)`;
       default:
         return color;
     }
