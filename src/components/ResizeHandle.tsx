@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback } from 'react';
 
 interface ResizeHandleProps {
   onResize: (width: number) => void;
