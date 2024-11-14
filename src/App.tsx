@@ -3,6 +3,7 @@ import { Minus, Maximize2, X, Palette, InfoIcon } from 'lucide-react';
 import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
 import { getColorName } from './utils/colorNames';
+import { ResizeHandle } from './components/ResizeHandle';
 
 interface ColorData {
   name: string;
@@ -18,6 +19,7 @@ function App() {
   const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
   const [colorMode, setColorMode] = useState<'none' | 'hsl' | 'rgb' | 'hex'>('none');
+  const [asideWidth, setAsideWidth] = useState(420);
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -193,7 +195,10 @@ function App() {
       </header>
 
       <div className="flex pt-[72px] h-screen">
-        <aside className="sticky top-[72px] min-w-[420px] max-w-[600px] w-[30vw] h-[calc(100vh-72px)] overflow-y-auto p-6">
+        <aside 
+          className="sticky top-[72px] min-w-[420px] max-w-[600px] w-[30vw] h-[calc(100vh-72px)] overflow-y-auto p-6"
+          style={{ width: asideWidth }}
+        >
           <div className="space-y-6">
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-4">
@@ -276,6 +281,7 @@ function App() {
               setFontSize={setFontSize}
             />
           </div>
+          <ResizeHandle onResize={setAsideWidth} />
         </aside>
 
         <main className="flex-1 p-6">
