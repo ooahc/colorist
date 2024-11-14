@@ -41,6 +41,8 @@ export const ColorCard: React.FC<ColorCardProps> = ({
   const handleClick = () => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (rect && colorInputRef.current) {
+      // 读取颜色值
+      colorInputRef.current.value = color;
       const scrollX = window.scrollX;
       const scrollY = window.scrollY;
       
