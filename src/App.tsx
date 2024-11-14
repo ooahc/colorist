@@ -193,7 +193,7 @@ function App() {
       </header>
 
       <div className="flex pt-[72px] h-screen">
-        <aside className="fixed bottom-0 top-[72px] left-5 w-[408px] overflow-y-auto p-6">
+        <aside className="sticky top-[72px] min-w-[420px] max-w-[600px] w-[30vw] h-[calc(100vh-72px)] overflow-y-auto p-6">
           <div className="space-y-6">
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-4">
@@ -278,7 +278,7 @@ function App() {
           </div>
         </aside>
 
-        <main className="ml-[448px] flex-1 p-6">
+        <main className="flex-1 p-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div 
               className="grid gap-4" 
