@@ -17,6 +17,7 @@ function App() {
   const [colors, setColors] = useState<ColorData[]>([]);
   const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(null);
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
+  const [colorMode, setColorMode] = useState<'none' | 'hsl' | 'rgb' | 'hex'>('none');
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -64,14 +65,15 @@ function App() {
   const displayColors = colors.length > 0 ? colors : defaultColors;
 
   const handleColorChange = (index: number, newColor: string) => {
+    const convertedColor = colorMode !== 'none' ? convertColor(newColor, colorMode) : newColor;
+    
     if (colors.length === 0) {
-      // 如果是在默认颜色上操作，先将默认颜色复制到 colors 中
       setColors([...defaultColors]);
       setTimeout(() => {
         const updatedColors = [...defaultColors];
         updatedColors[index] = {
           ...updatedColors[index],
-          value: newColor
+          value: convertedColor
         };
         setColors(updatedColors);
       }, 0);
@@ -81,7 +83,7 @@ function App() {
     const updatedColors = [...colors];
     updatedColors[index] = {
       ...updatedColors[index],
-      value: newColor
+      value: convertedColor
     };
     setColors(updatedColors);
 
@@ -90,9 +92,9 @@ function App() {
       if (lines[index]) {
         const formatMatch = lines[index].match(/title=(.*?);color=/);
         if (formatMatch) {
-          lines[index] = `title=${formatMatch[1]};color=${newColor}`;
+          lines[index] = `title=${formatMatch[1]};color=${convertedColor}`;
         } else {
-          lines[index] = newColor;
+          lines[index] = convertedColor;
         }
         setColorList(lines.join('\n'));
       }
@@ -123,6 +125,47 @@ function App() {
       document.removeEventListener('click', handleClickOutside);
     };
   }, [isPopoverVisible]);
+
+  const convertColor = (color: string, targetMode: 'hsl' | 'rgb' | 'hex'): string => {
+    // 创建临时元素来标准化颜色
+    const temp = document.createElement('div');
+    temp.style.color = color;
+    document.body.appendChild(temp);
+    const computedColor = window.getComputedStyle(temp).color;
+    document.body.removeChild(temp);
+
+    // 解析 RGB 值
+    const [r, g, b] = computedColor.match(/\d+/g)!.map(Number);
+
+    switch (targetMode) {
+      case 'rgb':
+        return `rgb(${r}, ${g}, ${b})`;
+      case 'hex':
+        return `#${[r, g, b].map(x => x.toString(16).padStart(2, '0')).join('')}`;
+      case 'hsl':
+        // RGB 转 HSL
+        const r1 = r / 255;
+        const g1 = g / 255;
+        const b1 = b / 255;
+        const max = Math.max(r1, g1, b1);
+        const min = Math.min(r1, g1, b1);
+        let h = 0, s = 0, l = (max + min) / 2;
+
+        if (max !== min) {
+          const d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch (max) {
+            case r1: h = (g1 - b1) / d + (g1 < b1 ? 6 : 0); break;
+            case g1: h = (b1 - r1) / d + 2; break;
+            case b1: h = (r1 - g1) / d + 4; break;
+          }
+          h *= 60;
+        }
+        return `hsl(${Math.round(h)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+      default:
+        return color;
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -159,24 +202,58 @@ function App() {
               
               <div className="space-y-4">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Color List
-                    </label>
-                    <div className="relative">
-                      <InfoIcon 
-                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsPopoverVisible(!isPopoverVisible);
+                  <div className="flex items-center gap-4 mb-2">
+                    <div className="flex items-center gap-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Color List
+                      </label>
+                      <div className="relative">
+                        <InfoIcon 
+                          className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsPopoverVisible(!isPopoverVisible);
+                          }}
+                        />
+                        {isPopoverVisible && (
+                          <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
+                            {placeholderText}
+                            <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        颜色模式
+                      </label>
+                      <select
+                        className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                        value={colorMode}
+                        onChange={(e) => {
+                          const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
+                          setColorMode(newMode);
+                          if (newMode !== 'none' && colors.length > 0) {
+                            const updatedColors = colors.map(color => ({
+                              ...color,
+                              value: convertColor(color.value, newMode)
+                            }));
+                            setColors(updatedColors);
+                            setColorList(updatedColors.map(color => {
+                              if (color.name === color.value) {
+                                return color.value;
+                              }
+                              return `title=${color.name};color=${color.value}`;
+                            }).join('\n'));
+                          }
                         }}
-                      />
-                      {isPopoverVisible && (
-                        <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
-                          {placeholderText}
-                          <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
-                        </div>
-                      )}
+                      >
+                        <option value="none">未选择</option>
+                        <option value="hsl">HSL</option>
+                        <option value="rgb">RGB</option>
+                        <option value="hex">HEX</option>
+                      </select>
                     </div>
                   </div>
                   <textarea

@@ -75,11 +75,10 @@ export const ColorCard: React.FC<ColorCardProps> = ({
     onColorChange(e.target.value);
     setTimeout(() => {
       onBlur?.();
-      // 重置颜色选择器位置
       if (colorInputRef.current) {
         colorInputRef.current.style.position = 'absolute';
-        colorInputRef.current.style.left = '-9999px'; // 移出视图
-        colorInputRef.current.style.top = '-9999px';  // 移出视图
+        colorInputRef.current.style.left = '-9999px';
+        colorInputRef.current.style.top = '-9999px';
       }
     }, 0);
   };
