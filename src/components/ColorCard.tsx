@@ -41,8 +41,25 @@ export const ColorCard: React.FC<ColorCardProps> = ({
   const handleClick = () => {
     const rect = cardRef.current?.getBoundingClientRect();
     if (rect && colorInputRef.current) {
-      // 读取颜色值
-      colorInputRef.current.value = color;
+      // 创建一个临时元素来标准化颜色值
+      const tempDiv = document.createElement('div');
+      tempDiv.style.color = color;
+      document.body.appendChild(tempDiv);
+      const computedColor = window.getComputedStyle(tempDiv).color;
+      document.body.removeChild(tempDiv);
+      
+      // 将 RGB 格式转换为 HEX
+      const rgb = computedColor.match(/\d+/g);
+      if (rgb) {
+        const hex = '#' + rgb.map(x => {
+          const hex = parseInt(x).toString(16);
+          return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+        colorInputRef.current.value = hex;
+      } else {
+        colorInputRef.current.value = color;
+      }
+
       const scrollX = window.scrollX;
       const scrollY = window.scrollY;
       
