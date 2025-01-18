@@ -1,5 +1,5 @@
 # QQQuick Start
-[Color Card Generator](https://lesszhoo.github.io/Color_Card_List/)
+[Color Card Generator](https://chaozhoo.github.io/Color_Card_List/)
 
 # Color Card Generator
 A React application for generating and managing color cards with real-time preview.
