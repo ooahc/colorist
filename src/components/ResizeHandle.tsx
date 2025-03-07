@@ -6,6 +6,15 @@ interface ResizeHandleProps {
   maxWidth?: number;
 }
 
+// 添加类型声明来解决 CSSStyleDeclaration 问题
+declare global {
+  interface CSSStyleDeclaration {
+    WebkitUserSelect: string;
+    msUserSelect: string;
+    MozUserSelect: string;
+  }
+}
+
 export function ResizeHandle({
   onResize,
   minWidth = 420,
