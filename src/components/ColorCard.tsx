@@ -5,6 +5,7 @@ interface ColorCardProps {
   name: string;
   height: number;
   fontSize: number;
+  backgroundColor: string;
   onColorChange: (newColor: string) => void;
   isSelected?: boolean;
   onBlur?: () => void;
@@ -15,6 +16,7 @@ export const ColorCard: React.FC<ColorCardProps> = ({
   name, 
   height, 
   fontSize,
+  backgroundColor,
   onColorChange,
   isSelected,
   onBlur 
@@ -86,12 +88,17 @@ export const ColorCard: React.FC<ColorCardProps> = ({
   return (
     <div 
       ref={cardRef}
-      className={`rounded-lg overflow-hidden border transition-all duration-200 ${
+      className={`rounded-lg overflow-hidden transition-all duration-200 ${
         isSelected 
           ? 'border-blue-500 shadow-lg' 
-          : 'border-gray-200 shadow-sm hover:shadow-md'
+          : 'shadow-sm hover:shadow-md'
       }`}
-      style={{ height }}
+      style={{ 
+        height,
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        borderColor: backgroundColor === '#ffffff' ? '#e5e7eb' : backgroundColor
+      }}
       onClick={handleClick}
     >
       <div className="h-4/5 relative">

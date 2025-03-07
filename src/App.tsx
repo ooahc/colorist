@@ -349,6 +349,7 @@ function App() {
                   name={color.name}
                   height={cardHeight}
                   fontSize={fontSize}
+                  backgroundColor={backgroundColor}
                   onColorChange={(newColor) => handleColorChange(idx, newColor)}
                   isSelected={selectedColorIndex === idx}
                   onBlur={handleCardBlur}
