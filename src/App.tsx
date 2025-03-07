@@ -4,6 +4,7 @@ import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
 import { getColorName } from './utils/colorNames';
 import { ResizeHandle } from './components/ResizeHandle';
+import { MonacoEditor } from './components/MonacoEditor';
 
 interface ColorData {
   name: string;
@@ -261,13 +262,14 @@ function App() {
                       </select>
                     </div>
                   </div>
-                  <textarea
-                    className="w-full h-40 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-                    placeholder={placeholderText}
-                    value={colorList}
-                    onChange={(e) => handleColorListChange(e.target.value)}
-                    wrap="off"
-                  />
+                  <div className="w-full border border-gray-300 rounded-md shadow-sm overflow-hidden">
+                    <MonacoEditor
+                      value={colorList}
+                      onChange={handleColorListChange}
+                      placeholder={placeholderText}
+                      height="10rem"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
