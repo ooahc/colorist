@@ -5,7 +5,6 @@ import { Controls } from './components/Controls';
 import { getColorName } from './utils/colorNames';
 import { ResizeHandle } from './components/ResizeHandle';
 import { ResizableEditor } from './components/ResizableEditor';
-import { BackgroundColorPicker } from './components/BackgroundColorPicker';
 
 interface ColorData {
   name: string;
@@ -23,7 +22,6 @@ function App() {
   const [colorMode, setColorMode] = useState<'none' | 'hsl' | 'rgb' | 'hex'>('none');
   const [asideWidth, setAsideWidth] = useState(420);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [backgroundColor, setBackgroundColor] = useState('#f9fafb');
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -204,7 +202,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor }}>
+    <div className="min-h-screen bg-gray-50">
       <header className="fixed top-0 left-0 right-0 h-[72px] bg-white border-b border-gray-200 z-50">
         <div className="h-full px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -241,15 +239,6 @@ function App() {
               </div>
               
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    背景颜色
-                  </label>
-                  <BackgroundColorPicker
-                    onChange={setBackgroundColor}
-                    defaultColor={backgroundColor}
-                  />
-                </div>
                 <div>
                   <div className="flex items-center gap-4 mb-2">
                     <div className="flex items-center gap-2">
