@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Minus, Maximize2, X, Palette, InfoIcon } from 'lucide-react';
 import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
@@ -21,6 +21,7 @@ function App() {
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
   const [colorMode, setColorMode] = useState<'none' | 'hsl' | 'rgb' | 'hex'>('none');
   const [asideWidth, setAsideWidth] = useState(420);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -170,26 +171,57 @@ function App() {
     }
   };
 
+  const toggleFullscreen = useCallback(async () => {
+    if (!document.fullscreenElement) {
+      try {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } catch (err) {
+        console.error('Error attempting to enable fullscreen:', err);
+      }
+    } else {
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch (err) {
+        console.error('Error attempting to exit fullscreen:', err);
+      }
+    }
+  }, []);
+
+  // 监听全屏变化
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <Palette className="h-8 w-8" />
-            <h1 className="text-xl font-semibold">
-              疯狂的调色盘
-              <span className="ml-2 font-normal text-[hsl(0,0%,60%)] font-logo">· by Oahc</span>
+    <div className="min-h-screen bg-gray-50">
+      <header className="fixed top-0 left-0 right-0 h-[72px] bg-white border-b border-gray-200 z-50">
+        <div className="h-full px-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-logo text-gray-900">
+              Color Card List
             </h1>
           </div>
-          <div className="flex gap-4">
-            <button className="hover:bg-white/10 p-2 rounded-full transition-colors">
-              <Minus className="h-5 w-5" />
-            </button>
-            <button className="hover:bg-white/10 p-2 rounded-full transition-colors">
-              <Maximize2 className="h-5 w-5" />
-            </button>
-            <button className="hover:bg-white/10 p-2 rounded-full transition-colors">
-              <X className="h-5 w-5" />
+          
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleFullscreen}
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              title={isFullscreen ? '退出全屏' : '进入全屏'}
+            >
+              <Maximize2 
+                className={`w-5 h-5 transition-transform ${
+                  isFullscreen ? 'scale-90' : 'scale-100'
+                }`}
+              />
             </button>
           </div>
         </div>
