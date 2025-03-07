@@ -4,6 +4,7 @@ import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
 import { getColorName } from './utils/colorNames';
 import { ResizeHandle } from './components/ResizeHandle';
+import { ResizableEditor } from './components/ResizableEditor';
 
 interface ColorData {
   name: string;
@@ -261,12 +262,13 @@ function App() {
                       </select>
                     </div>
                   </div>
-                  <textarea
-                    className="w-full h-40 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
-                    placeholder={placeholderText}
+                  <ResizableEditor
                     value={colorList}
-                    onChange={(e) => handleColorListChange(e.target.value)}
-                    wrap="off"
+                    onChange={handleColorListChange}
+                    placeholder={placeholderText}
+                    minHeight={160}
+                    maxHeight={600}
+                    defaultHeight={160}
                   />
                 </div>
               </div>
