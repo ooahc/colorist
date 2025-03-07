@@ -241,79 +241,67 @@ function App() {
               </div>
               
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    背景颜色
-                  </label>
-                  <BackgroundColorPicker
-                    onChange={setBackgroundColor}
-                    defaultColor={backgroundColor}
-                  />
-                </div>
-                <div>
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="flex items-center gap-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Color List
-                      </label>
-                      <div className="relative">
-                        <InfoIcon 
-                          className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsPopoverVisible(!isPopoverVisible);
-                          }}
-                        />
-                        {isPopoverVisible && (
-                          <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
-                            {placeholderText}
-                            <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        颜色模式
-                      </label>
-                      <select
-                        className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
-                        value={colorMode}
-                        onChange={(e) => {
-                          const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
-                          setColorMode(newMode);
-                          if (newMode !== 'none' && colors.length > 0) {
-                            const updatedColors = colors.map(color => ({
-                              ...color,
-                              value: convertColor(color.value, newMode)
-                            }));
-                            setColors(updatedColors);
-                            setColorList(updatedColors.map(color => {
-                              if (color.name === color.value) {
-                                return color.value;
-                              }
-                              return `title=${color.name};color=${color.value}`;
-                            }).join('\n'));
-                          }
+                <div className="flex items-center gap-4 mb-2">
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Color List
+                    </label>
+                    <div className="relative">
+                      <InfoIcon 
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsPopoverVisible(!isPopoverVisible);
                         }}
-                      >
-                        <option value="none">未选择</option>
-                        <option value="hsl">HSL</option>
-                        <option value="rgb">RGB</option>
-                        <option value="hex">HEX</option>
-                      </select>
+                      />
+                      {isPopoverVisible && (
+                        <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
+                          {placeholderText}
+                          <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <ResizableEditor
-                    value={colorList}
-                    onChange={handleColorListChange}
-                    placeholder={placeholderText}
-                    minHeight={160}
-                    maxHeight={600}
-                    defaultHeight={160}
-                  />
+                  
+                  <label className="block text-sm font-medium text-gray-700">
+                    颜色模式
+                  </label>
+                  <select
+                    className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    value={colorMode}
+                    onChange={(e) => {
+                      const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
+                      setColorMode(newMode);
+                      if (newMode !== 'none' && colors.length > 0) {
+                        const updatedColors = colors.map(color => ({
+                          ...color,
+                          value: convertColor(color.value, newMode)
+                        }));
+                        setColors(updatedColors);
+                        setColorList(updatedColors.map(color => {
+                          if (color.name === color.value) {
+                            return color.value;
+                          }
+                          return `title=${color.name};color=${color.value}`;
+                        }).join('\n'));
+                      }
+                    }}
+                  >
+                    <option value="none">未选择</option>
+                    <option value="hsl">HSL</option>
+                    <option value="rgb">RGB</option>
+                    <option value="hex">HEX</option>
+                  </select>
                 </div>
+                
+                <ResizableEditor
+                  value={colorList}
+                  onChange={handleColorListChange}
+                  placeholder={placeholderText}
+                  minHeight={160}
+                  maxHeight={600}
+                  defaultHeight={160}
+                />
               </div>
             </div>
 
@@ -325,6 +313,16 @@ function App() {
               fontSize={fontSize}
               setFontSize={setFontSize}
             />
+
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-medium text-gray-700">背景颜色</h2>
+              </div>
+              <BackgroundColorPicker
+                onChange={setBackgroundColor}
+                defaultColor={backgroundColor}
+              />
+            </div>
           </div>
           <ResizeHandle
             onResize={setAsideWidth}
@@ -334,7 +332,10 @@ function App() {
         </aside>
 
         <main className="flex-1 p-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div 
+            className="bg-white p-6 rounded-lg shadow-sm"
+            style={{ backgroundColor }}
+          >
             <div 
               className="grid gap-4" 
               style={{ 
