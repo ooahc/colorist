@@ -4,7 +4,6 @@ import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
 import { getColorName } from './utils/colorNames';
 import { ResizeHandle } from './components/ResizeHandle';
-import { MonacoEditor } from './components/MonacoEditor';
 import { ResizableEditor } from './components/ResizableEditor';
 
 interface ColorData {
