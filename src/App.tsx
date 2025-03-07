@@ -21,8 +21,6 @@ function App() {
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
   const [colorMode, setColorMode] = useState<'none' | 'hsl' | 'rgb' | 'hex'>('none');
   const [asideWidth, setAsideWidth] = useState(420);
-  const [isAsideCollapsed, setIsAsideCollapsed] = useState(false);
-  const [previousWidth, setPreviousWidth] = useState(420);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const defaultColors: ColorData[] = [
@@ -203,27 +201,6 @@ function App() {
     };
   }, []);
 
-  // 处理折叠/展开
-  const handleToggleCollapse = useCallback(() => {
-    setIsAsideCollapsed(prev => {
-      if (!prev) {
-        // 折叠时保存当前宽度
-        setPreviousWidth(asideWidth);
-        setAsideWidth(0);
-      } else {
-        // 展开时恢复之前的宽度
-        setAsideWidth(previousWidth);
-      }
-      return !prev;
-    });
-  }, [asideWidth, previousWidth]);
-
-  // 处理宽度调整
-  const handleResize = useCallback((newWidth: number) => {
-    setAsideWidth(newWidth);
-    setPreviousWidth(newWidth);
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="fixed top-0 left-0 right-0 h-[72px] bg-white border-b border-gray-200 z-50">
@@ -252,12 +229,10 @@ function App() {
 
       <div className="flex pt-[72px] h-screen">
         <aside 
-          className={`sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto p-6 relative
-            transition-[width,opacity,transform] duration-300 ease-in-out
-            ${isAsideCollapsed ? 'w-0 opacity-0 transform -translate-x-full' : 'opacity-100 transform translate-x-0'}`}
-          style={{ width: isAsideCollapsed ? 0 : asideWidth }}
+          className="sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto p-6 relative"
+          style={{ width: asideWidth }}
         >
-          <div className={`space-y-6 ${isAsideCollapsed ? 'invisible' : ''}`}>
+          <div className="space-y-6">
             <div className="bg-white p-4 rounded-lg shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold">显示设置</h2>
@@ -341,17 +316,13 @@ function App() {
             />
           </div>
           <ResizeHandle
-            onResize={handleResize}
+            onResize={setAsideWidth}
             minWidth={420}
             maxWidth={600}
-            isCollapsed={isAsideCollapsed}
-            onToggleCollapse={handleToggleCollapse}
           />
         </aside>
 
-        <main className={`flex-1 p-6 transition-[padding] duration-300 ease-in-out
-          ${isAsideCollapsed ? 'pl-8' : ''}`}
-        >
+        <main className="flex-1 p-6">
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <div 
               className="grid gap-4" 
