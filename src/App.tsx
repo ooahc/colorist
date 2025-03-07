@@ -5,6 +5,7 @@ import { Controls } from './components/Controls';
 import { getColorName } from './utils/colorNames';
 import { ResizeHandle } from './components/ResizeHandle';
 import { MonacoEditor } from './components/MonacoEditor';
+import { ResizableEditor } from './components/ResizableEditor';
 
 interface ColorData {
   name: string;
@@ -262,14 +263,14 @@ function App() {
                       </select>
                     </div>
                   </div>
-                  <div className="w-full border border-gray-300 rounded-md shadow-sm overflow-hidden">
-                    <MonacoEditor
-                      value={colorList}
-                      onChange={handleColorListChange}
-                      placeholder={placeholderText}
-                      height="10rem"
-                    />
-                  </div>
+                  <ResizableEditor
+                    value={colorList}
+                    onChange={handleColorListChange}
+                    placeholder={placeholderText}
+                    minHeight={160}
+                    maxHeight={600}
+                    defaultHeight={160}
+                  />
                 </div>
               </div>
             </div>
