@@ -229,7 +229,7 @@ function App() {
 
       <div className="flex pt-[72px] h-screen">
         <aside 
-          className="sticky top-[72px] min-w-[420px] max-w-[600px] w-[30vw] h-[calc(100vh-72px)] overflow-y-auto p-6"
+          className="sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto p-6 relative"
           style={{ width: asideWidth }}
         >
           <div className="space-y-6">
@@ -315,7 +315,11 @@ function App() {
               setFontSize={setFontSize}
             />
           </div>
-          <ResizeHandle onResize={setAsideWidth} />
+          <ResizeHandle
+            onResize={setAsideWidth}
+            minWidth={420}
+            maxWidth={600}
+          />
         </aside>
 
         <main className="flex-1 p-6">

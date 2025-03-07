@@ -1,33 +1,92 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 interface ResizeHandleProps {
   onResize: (width: number) => void;
+  minWidth?: number;
+  maxWidth?: number;
 }
 
-export const ResizeHandle: React.FC<ResizeHandleProps> = ({ onResize }) => {
-  const handleDrag = useCallback((e: MouseEvent) => {
-    const width = e.clientX;
-    if (width >= 420 && width <= 600) {
-      onResize(width);
-    }
-  }, [onResize]);
+export function ResizeHandle({
+  onResize,
+  minWidth = 420,
+  maxWidth = 600
+}: ResizeHandleProps) {
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startWidthRef = useRef(0);
 
-  const handleDragEnd = useCallback(() => {
-    document.removeEventListener('mousemove', handleDrag);
-    document.removeEventListener('mouseup', handleDragEnd);
-    document.body.style.cursor = 'default';
-  }, [handleDrag]);
+  // 添加和移除用户选择样式
+  const disableSelection = useCallback(() => {
+    document.body.style.userSelect = 'none';
+    document.body.style.WebkitUserSelect = 'none';
+    document.body.style.msUserSelect = 'none';
+    document.body.style.MozUserSelect = 'none';
+  }, []);
 
-  const startResize = useCallback(() => {
-    document.addEventListener('mousemove', handleDrag);
-    document.addEventListener('mouseup', handleDragEnd);
+  const enableSelection = useCallback(() => {
+    document.body.style.userSelect = '';
+    document.body.style.WebkitUserSelect = '';
+    document.body.style.msUserSelect = '';
+    document.body.style.MozUserSelect = '';
+  }, []);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    isDraggingRef.current = true;
+    startXRef.current = e.clientX;
+    startWidthRef.current = e.currentTarget.parentElement?.getBoundingClientRect().width ?? 0;
     document.body.style.cursor = 'ew-resize';
-  }, [handleDrag, handleDragEnd]);
+    disableSelection();
+    e.preventDefault();
+  }, [disableSelection]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDraggingRef.current) return;
+
+    const delta = e.clientX - startXRef.current;
+    const newWidth = Math.max(minWidth, Math.min(maxWidth, startWidthRef.current + delta));
+    onResize(newWidth);
+    e.preventDefault();
+  }, [maxWidth, minWidth, onResize]);
+
+  const handleMouseUp = useCallback(() => {
+    if (!isDraggingRef.current) return;
+    
+    isDraggingRef.current = false;
+    document.body.style.cursor = 'default';
+    enableSelection();
+  }, [enableSelection]);
+
+  // 添加和移除全局事件监听器
+  const handleResizeStart = useCallback(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  }, [handleMouseMove, handleMouseUp]);
+
+  const handleResizeEnd = useCallback(() => {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  }, [handleMouseMove, handleMouseUp]);
 
   return (
     <div
-      className="absolute right-0 top-0 w-1 h-full cursor-ew-resize hover:bg-blue-500/50 transition-colors"
-      onMouseDown={startResize}
-    />
+      className="absolute right-0 top-0 w-1.5 h-full group cursor-ew-resize"
+      onMouseDown={(e) => {
+        handleMouseDown(e);
+        handleResizeStart();
+      }}
+      onMouseUp={handleResizeEnd}
+    >
+      {/* 视觉指示器 */}
+      <div className="absolute inset-y-0 left-0 w-px bg-gray-200 group-hover:bg-blue-500 transition-colors" />
+      <div className="absolute inset-y-0 right-0 w-px bg-gray-200 group-hover:bg-blue-500 transition-colors" />
+      
+      {/* 拖动手柄指示器 */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-8 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="w-full h-full flex items-center justify-center space-x-0.5">
+          <div className="w-px h-4 bg-blue-500 rounded-full" />
+          <div className="w-px h-4 bg-blue-500 rounded-full" />
+        </div>
+      </div>
+    </div>
   );
-}; 
+} 
