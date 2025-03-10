@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
-import { Minus, Maximize2, X, Palette, InfoIcon } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Maximize2, InfoIcon } from 'lucide-react';
 import { ColorCard } from './components/ColorCard';
 import { Controls } from './components/Controls';
 import { getColorName } from './utils/colorNames';
 import { ResizeHandle } from './components/ResizeHandle';
 import { ResizableEditor } from './components/ResizableEditor';
+import { BackgroundColorPicker } from './components/BackgroundColorPicker';
 
 interface ColorData {
   name: string;
@@ -21,6 +22,8 @@ function App() {
   const [isPopoverVisible, setIsPopoverVisible] = useState(false);
   const [colorMode, setColorMode] = useState<'none' | 'hsl' | 'rgb' | 'hex'>('none');
   const [asideWidth, setAsideWidth] = useState(420);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState('#f9fafb');
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -170,26 +173,57 @@ function App() {
     }
   };
 
+  const toggleFullscreen = useCallback(async () => {
+    if (!document.fullscreenElement) {
+      try {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } catch (err) {
+        console.error('Error attempting to enable fullscreen:', err);
+      }
+    } else {
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch (err) {
+        console.error('Error attempting to exit fullscreen:', err);
+      }
+    }
+  }, []);
+
+  // 监听全屏变化
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-4 shadow-lg">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <Palette className="h-8 w-8" />
-            <h1 className="text-xl font-semibold">
-              疯狂的调色盘
-              <span className="ml-2 font-normal text-[hsl(0,0%,60%)] font-logo">· by Oahc</span>
+    <div className="min-h-screen">
+      <header className="fixed top-0 left-0 right-0 h-[72px] bg-white border-b border-gray-200 z-50">
+        <div className="h-full px-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-logo text-gray-900">
+              Color Card List
             </h1>
           </div>
-          <div className="flex gap-4">
-            <button className="hover:bg-white/10 p-2 rounded-full transition-colors">
-              <Minus className="h-5 w-5" />
-            </button>
-            <button className="hover:bg-white/10 p-2 rounded-full transition-colors">
-              <Maximize2 className="h-5 w-5" />
-            </button>
-            <button className="hover:bg-white/10 p-2 rounded-full transition-colors">
-              <X className="h-5 w-5" />
+          
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleFullscreen}
+              className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              title={isFullscreen ? '退出全屏' : '进入全屏'}
+            >
+              <Maximize2 
+                className={`w-5 h-5 transition-transform ${
+                  isFullscreen ? 'scale-90' : 'scale-100'
+                }`}
+              />
             </button>
           </div>
         </div>
@@ -197,7 +231,7 @@ function App() {
 
       <div className="flex pt-[72px] h-screen">
         <aside 
-          className="sticky top-[72px] min-w-[420px] max-w-[600px] w-[30vw] h-[calc(100vh-72px)] overflow-y-auto p-6"
+          className="sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto p-6 relative"
           style={{ width: asideWidth }}
         >
           <div className="space-y-6">
@@ -207,70 +241,67 @@ function App() {
               </div>
               
               <div className="space-y-4">
-                <div>
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="flex items-center gap-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        Color List
-                      </label>
-                      <div className="relative">
-                        <InfoIcon 
-                          className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsPopoverVisible(!isPopoverVisible);
-                          }}
-                        />
-                        {isPopoverVisible && (
-                          <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
-                            {placeholderText}
-                            <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        颜色模式
-                      </label>
-                      <select
-                        className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
-                        value={colorMode}
-                        onChange={(e) => {
-                          const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
-                          setColorMode(newMode);
-                          if (newMode !== 'none' && colors.length > 0) {
-                            const updatedColors = colors.map(color => ({
-                              ...color,
-                              value: convertColor(color.value, newMode)
-                            }));
-                            setColors(updatedColors);
-                            setColorList(updatedColors.map(color => {
-                              if (color.name === color.value) {
-                                return color.value;
-                              }
-                              return `title=${color.name};color=${color.value}`;
-                            }).join('\n'));
-                          }
+                <div className="flex items-center gap-4 mb-2">
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Color List
+                    </label>
+                    <div className="relative">
+                      <InfoIcon 
+                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsPopoverVisible(!isPopoverVisible);
                         }}
-                      >
-                        <option value="none">未选择</option>
-                        <option value="hsl">HSL</option>
-                        <option value="rgb">RGB</option>
-                        <option value="hex">HEX</option>
-                      </select>
+                      />
+                      {isPopoverVisible && (
+                        <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
+                          {placeholderText}
+                          <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <ResizableEditor
-                    value={colorList}
-                    onChange={handleColorListChange}
-                    placeholder={placeholderText}
-                    minHeight={160}
-                    maxHeight={600}
-                    defaultHeight={160}
-                  />
+                  
+                  <label className="block text-sm font-medium text-gray-700">
+                    颜色模式
+                  </label>
+                  <select
+                    className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    value={colorMode}
+                    onChange={(e) => {
+                      const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
+                      setColorMode(newMode);
+                      if (newMode !== 'none' && colors.length > 0) {
+                        const updatedColors = colors.map(color => ({
+                          ...color,
+                          value: convertColor(color.value, newMode)
+                        }));
+                        setColors(updatedColors);
+                        setColorList(updatedColors.map(color => {
+                          if (color.name === color.value) {
+                            return color.value;
+                          }
+                          return `title=${color.name};color=${color.value}`;
+                        }).join('\n'));
+                      }
+                    }}
+                  >
+                    <option value="none">未选择</option>
+                    <option value="hsl">HSL</option>
+                    <option value="rgb">RGB</option>
+                    <option value="hex">HEX</option>
+                  </select>
                 </div>
+                
+                <ResizableEditor
+                  value={colorList}
+                  onChange={handleColorListChange}
+                  placeholder={placeholderText}
+                  minHeight={160}
+                  maxHeight={600}
+                  defaultHeight={160}
+                />
               </div>
             </div>
 
@@ -282,12 +313,29 @@ function App() {
               fontSize={fontSize}
               setFontSize={setFontSize}
             />
+
+            <div className="bg-white p-4 rounded-lg shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-medium text-gray-700">背景颜色</h2>
+              </div>
+              <BackgroundColorPicker
+                onChange={setBackgroundColor}
+                defaultColor={backgroundColor}
+              />
+            </div>
           </div>
-          <ResizeHandle onResize={setAsideWidth} />
+          <ResizeHandle
+            onResize={setAsideWidth}
+            minWidth={420}
+            maxWidth={600}
+          />
         </aside>
 
         <main className="flex-1 p-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div 
+            className="p-6 rounded-lg shadow-sm"
+            style={{ backgroundColor }}
+          >
             <div 
               className="grid gap-4" 
               style={{ 
@@ -301,6 +349,7 @@ function App() {
                   name={color.name}
                   height={cardHeight}
                   fontSize={fontSize}
+                  backgroundColor={backgroundColor}
                   onColorChange={(newColor) => handleColorChange(idx, newColor)}
                   isSelected={selectedColorIndex === idx}
                   onBlur={handleCardBlur}
