@@ -373,6 +373,23 @@ function App() {
                     <option value="hex">HEX</option>
                   </select>
                 </div>
+
+                <div className="pt-2">
+                  <ResizableEditor
+                    value={colorList}
+                    onChange={handleColorListChange}
+                    placeholder={colorListFormat === 'json' 
+                      ? `[
+  { "name": "主色", "value": "#f43f5e" },
+  { "name": "次要色", "value": "#3b82f6" }
+]`
+                      : placeholderText
+                    }
+                    minHeight={160}
+                    maxHeight={600}
+                    defaultHeight={160}
+                  />
+                </div>
               </div>
             </div>
 
