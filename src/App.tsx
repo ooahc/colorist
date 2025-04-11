@@ -358,12 +358,20 @@ function App() {
                           value: convertColor(color.value, newMode)
                         }));
                         setColors(updatedColors);
-                        setColorList(updatedColors.map(color => {
-                          if (color.name === color.value) {
-                            return color.value;
-                          }
-                          return `title=${color.name};color=${color.value}`;
-                        }).join('\n'));
+                        
+                        // 根据当前格式更新颜色列表
+                        if (colorListFormat === 'json') {
+                          // JSON 格式：直接转换为格式化的 JSON 字符串
+                          setColorList(JSON.stringify(updatedColors, null, 2));
+                        } else {
+                          // 文本格式：转换为原有的文本格式
+                          setColorList(updatedColors.map(color => {
+                            if (color.name === getColorName(color.value)) {
+                              return color.value;
+                            }
+                            return `title=${color.name};color=${color.value}`;
+                          }).join('\n'));
+                        }
                       }
                     }}
                   >
