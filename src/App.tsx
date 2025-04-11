@@ -24,6 +24,7 @@ function App() {
   const [asideWidth, setAsideWidth] = useState(420);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState('#f9fafb');
+  const [colorListFormat, setColorListFormat] = useState<'text' | 'json'>('text');
 
   const defaultColors: ColorData[] = [
     { name: 'Red', value: 'hsl(0, 100%, 50%)' },
@@ -35,37 +36,65 @@ function App() {
   ];
 
   const handleColorListChange = (value: string) => {
-    const lines = value.split('\n');
-    const colors = lines
-      .map(inputLine => {
-        const trimmedLine = inputLine.trim();
-        if (!trimmedLine) return null;
+    let parsedColors: ColorData[] = [];
+    
+    if (colorListFormat === 'json') {
+      // 尝试解析 JSON 格式
+      try {
+        const jsonData = JSON.parse(value);
+        // 检查是否为数组
+        if (Array.isArray(jsonData)) {
+          parsedColors = jsonData
+            .map(item => {
+              // 检查对象格式是否正确
+              if (item && typeof item === 'object' && 'name' in item && 'value' in item) {
+                return {
+                  name: String(item.name),
+                  value: String(item.value)
+                };
+              }
+              return null;
+            })
+            .filter((color): color is ColorData => color !== null);
+        }
+      } catch (e) {
+        // JSON 解析错误，保持当前颜色不变
+        console.warn('JSON 解析错误', e);
+      }
+    } else {
+      // 原有的文本格式解析
+      const lines = value.split('\n');
+      parsedColors = lines
+        .map(inputLine => {
+          const trimmedLine = inputLine.trim();
+          if (!trimmedLine) return null;
 
-        // 匹配完整格式 title=name;color=value
-        const formatMatch = trimmedLine.match(/^title=(.*?);color=(.+)$/);
-        if (formatMatch) {
-          return {
-            name: formatMatch[1].trim(),
-            value: formatMatch[2].trim()
-          };
-        }
-        
-        // 匹配直接的颜色值（支持更多格式）
-        const isColorValue = /^(#([0-9a-f]{3}|[0-9a-f]{6})|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\))$/i;
-        
-        if (isColorValue.test(trimmedLine)) {
-          return {
-            name: getColorName(trimmedLine),
-            value: trimmedLine
-          };
-        }
-        
-        return null;
-      })
-      .filter((color): color is ColorData => color !== null);
+          // 匹配完整格式 title=name;color=value
+          const formatMatch = trimmedLine.match(/^title=(.*?);color=(.+)$/);
+          if (formatMatch) {
+            return {
+              name: formatMatch[1].trim(),
+              value: formatMatch[2].trim()
+            };
+          }
+          
+          // 匹配直接的颜色值
+          const isColorValue = /^(#([0-9a-f]{3}|[0-9a-f]{6})|rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)|hsl\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*\))$/i;
+          
+          if (isColorValue.test(trimmedLine)) {
+            return {
+              name: getColorName(trimmedLine),
+              value: trimmedLine
+            };
+          }
+          
+          return null;
+        })
+        .filter((color): color is ColorData => color !== null);
+    }
     
     setColorList(value);
-    setColors(colors);
+    setColors(parsedColors);
   };
 
   const displayColors = colors.length > 0 ? colors : defaultColors;
@@ -203,6 +232,29 @@ function App() {
     };
   }, []);
 
+  // 添加格式切换函数
+  const toggleColorListFormat = () => {
+    const newFormat = colorListFormat === 'text' ? 'json' : 'text';
+    
+    // 转换现有数据到新格式
+    if (newFormat === 'json') {
+      // 文本转JSON
+      const jsonValue = JSON.stringify(colors, null, 2);
+      setColorList(jsonValue);
+    } else {
+      // JSON转文本
+      const textValue = colors.map(color => {
+        if (color.name === getColorName(color.value)) {
+          return color.value;
+        }
+        return `title=${color.name};color=${color.value}`;
+      }).join('\n');
+      setColorList(textValue);
+    }
+    
+    setColorListFormat(newFormat);
+  };
+
   return (
     <div className="min-h-screen">
       <header className="fixed top-0 left-0 right-0 h-[72px] bg-white border-b border-gray-200 z-50">
@@ -263,6 +315,32 @@ function App() {
                     </div>
                   </div>
                   
+                  <div className="flex items-center gap-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      输入格式
+                    </label>
+                    <button 
+                      className={`px-2 py-1 text-xs rounded ${
+                        colorListFormat === 'text' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                      }`}
+                      onClick={() => {
+                        if (colorListFormat !== 'text') toggleColorListFormat();
+                      }}
+                    >
+                      文本
+                    </button>
+                    <button 
+                      className={`px-2 py-1 text-xs rounded ${
+                        colorListFormat === 'json' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                      }`}
+                      onClick={() => {
+                        if (colorListFormat !== 'json') toggleColorListFormat();
+                      }}
+                    >
+                      JSON
+                    </button>
+                  </div>
+                  
                   <label className="block text-sm font-medium text-gray-700">
                     颜色模式
                   </label>
@@ -297,7 +375,13 @@ function App() {
                 <ResizableEditor
                   value={colorList}
                   onChange={handleColorListChange}
-                  placeholder={placeholderText}
+                  placeholder={colorListFormat === 'json' 
+                    ? `[
+  { "name": "主色", "value": "#f43f5e" },
+  { "name": "次要色", "value": "#3b82f6" }
+]`
+                    : placeholderText
+                  }
                   minHeight={160}
                   maxHeight={600}
                   defaultHeight={160}
