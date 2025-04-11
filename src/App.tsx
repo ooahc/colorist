@@ -293,35 +293,35 @@ function App() {
               </div>
               
               <div className="space-y-4">
-                <div className="flex items-center gap-4 mb-2">
-                  <div className="flex items-center gap-2">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Color List
-                    </label>
-                    <div className="relative">
-                      <InfoIcon 
-                        className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setIsPopoverVisible(!isPopoverVisible);
-                        }}
-                      />
-                      {isPopoverVisible && (
-                        <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
-                          {placeholderText}
-                          <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
-                        </div>
-                      )}
-                    </div>
+                <div className="flex items-center gap-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Color List
+                  </label>
+                  <div className="relative">
+                    <InfoIcon 
+                      className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsPopoverVisible(!isPopoverVisible);
+                      }}
+                    />
+                    {isPopoverVisible && (
+                      <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
+                        {placeholderText}
+                        <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
+                      </div>
+                    )}
                   </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      输入格式
-                    </label>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700">
+                    输入格式
+                  </label>
+                  <div className="flex gap-2">
                     <button 
-                      className={`px-2 py-1 text-xs rounded ${
-                        colorListFormat === 'text' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                      className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                        colorListFormat === 'text' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
                       }`}
                       onClick={() => {
                         if (colorListFormat !== 'text') toggleColorListFormat();
@@ -330,8 +330,8 @@ function App() {
                       文本
                     </button>
                     <button 
-                      className={`px-2 py-1 text-xs rounded ${
-                        colorListFormat === 'json' ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                      className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                        colorListFormat === 'json' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
                       }`}
                       onClick={() => {
                         if (colorListFormat !== 'json') toggleColorListFormat();
@@ -340,12 +340,14 @@ function App() {
                       JSON
                     </button>
                   </div>
-                  
+                </div>
+                
+                <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700">
                     颜色模式
                   </label>
                   <select
-                    className="block w-24 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    className="w-full px-3 py-1.5 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
                     value={colorMode}
                     onChange={(e) => {
                       const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
@@ -371,21 +373,6 @@ function App() {
                     <option value="hex">HEX</option>
                   </select>
                 </div>
-                
-                <ResizableEditor
-                  value={colorList}
-                  onChange={handleColorListChange}
-                  placeholder={colorListFormat === 'json' 
-                    ? `[
-  { "name": "主色", "value": "#f43f5e" },
-  { "name": "次要色", "value": "#3b82f6" }
-]`
-                    : placeholderText
-                  }
-                  minHeight={160}
-                  maxHeight={600}
-                  defaultHeight={160}
-                />
               </div>
             </div>
 
