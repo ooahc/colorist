@@ -281,10 +281,10 @@ function App() {
         </div>
       </header>
 
-      <div className="flex pt-[72px] h-screen">
+      <div className="flex h-screen overflow-hidden">
         <aside 
-          className="sticky top-[72px] h-[calc(100vh-72px)] overflow-y-auto p-6 relative"
-          style={{ width: asideWidth }}
+          className="relative flex flex-col flex-none h-full overflow-y-auto"
+          style={{ width: asideWidth }} 
         >
           <div className="space-y-6">
             <div className="bg-white p-4 rounded-lg shadow-sm">
@@ -405,14 +405,13 @@ function App() {
               />
             </div>
           </div>
-          <ResizeHandle
-            onResize={setAsideWidth}
-            minWidth={420}
-            maxWidth={600}
-          />
         </aside>
-
-        <main className="flex-1 p-6">
+        <ResizeHandle
+          onResize={setAsideWidth}
+          minWidth={420}
+          maxWidth={600}
+        />
+        <main className="flex-1 h-full overflow-y-auto p-6">
           <div 
             className="p-6 rounded-lg shadow-sm"
             style={{ backgroundColor }}
