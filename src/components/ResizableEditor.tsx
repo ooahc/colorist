@@ -46,16 +46,30 @@ export function ResizableEditor({
     document.body.style.cursor = 'default';
   }, []);
 
+  // 添加处理鼠标离开文档的函数
+  const handleMouseLeave = useCallback(() => {
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      document.body.style.cursor = 'default';
+    }
+  }, []);
+
   // 添加和移除全局事件监听器
   const handleResizeStart = useCallback(() => {
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  }, [handleMouseMove, handleMouseUp]);
+    document.addEventListener('mouseleave', handleMouseLeave);
+  }, [handleMouseMove, handleMouseUp, handleMouseLeave]);
 
   const handleResizeEnd = useCallback(() => {
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
-  }, [handleMouseMove, handleMouseUp]);
+    document.removeEventListener('mouseleave', handleMouseLeave);
+    
+    // 确保在任何情况下重置光标
+    isDraggingRef.current = false;
+    document.body.style.cursor = 'default';
+  }, [handleMouseMove, handleMouseUp, handleMouseLeave]);
 
   return (
     <div className="relative w-full border border-gray-300 rounded-md shadow-sm overflow-hidden">
