@@ -282,135 +282,134 @@ function App() {
       </header>
 
       <div className="flex h-screen overflow-hidden">
-        <aside 
-          className="relative flex flex-col flex-none h-full overflow-y-auto"
-          style={{ width: asideWidth }} 
-        >
-          <div className="space-y-6">
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold">显示设置</h2>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Color List
-                  </label>
+        <div className="relative flex-none" style={{ width: asideWidth }}>
+          <aside className="h-full overflow-y-auto p-6">
+            <div className="space-y-6">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold">显示设置</h2>
                 </div>
                 
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    输入格式
-                  </label>
-                  <div className="flex gap-2">
-                    <button 
-                      className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                        colorListFormat === 'text' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
-                      }`}
-                      onClick={() => {
-                        if (colorListFormat !== 'text') toggleColorListFormat();
-                      }}
-                    >
-                      文本
-                    </button>
-                    <button 
-                      className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
-                        colorListFormat === 'json' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
-                      }`}
-                      onClick={() => {
-                        if (colorListFormat !== 'json') toggleColorListFormat();
-                      }}
-                    >
-                      JSON
-                    </button>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Color List
+                    </label>
                   </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    颜色模式
-                  </label>
-                  <select
-                    className="w-full px-3 py-1.5 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
-                    value={colorMode}
-                    onChange={(e) => {
-                      const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
-                      setColorMode(newMode);
-                      if (newMode !== 'none' && colors.length > 0) {
-                        const updatedColors = colors.map(color => ({
-                          ...color,
-                          value: convertColor(color.value, newMode)
-                        }));
-                        setColors(updatedColors);
-                        
-                        // 根据当前格式更新颜色列表
-                        if (colorListFormat === 'json') {
-                          // JSON 格式：直接转换为格式化的 JSON 字符串
-                          setColorList(JSON.stringify(updatedColors, null, 2));
-                        } else {
-                          // 文本格式：转换为原有的文本格式
-                          setColorList(updatedColors.map(color => {
-                            if (color.name === getColorName(color.value)) {
-                              return color.value;
-                            }
-                            return `title=${color.name};color=${color.value}`;
-                          }).join('\n'));
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      输入格式
+                    </label>
+                    <div className="flex gap-2">
+                      <button 
+                        className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                          colorListFormat === 'text' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                        }`}
+                        onClick={() => {
+                          if (colorListFormat !== 'text') toggleColorListFormat();
+                        }}
+                      >
+                        文本
+                      </button>
+                      <button 
+                        className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                          colorListFormat === 'json' ? 'bg-blue-500 text-white' : 'bg-gray-100 hover:bg-gray-200'
+                        }`}
+                        onClick={() => {
+                          if (colorListFormat !== 'json') toggleColorListFormat();
+                        }}
+                      >
+                        JSON
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      颜色模式
+                    </label>
+                    <select
+                      className="w-full px-3 py-1.5 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                      value={colorMode}
+                      onChange={(e) => {
+                        const newMode = e.target.value as 'none' | 'hsl' | 'rgb' | 'hex';
+                        setColorMode(newMode);
+                        if (newMode !== 'none' && colors.length > 0) {
+                          const updatedColors = colors.map(color => ({
+                            ...color,
+                            value: convertColor(color.value, newMode)
+                          }));
+                          setColors(updatedColors);
+                          
+                          // 根据当前格式更新颜色列表
+                          if (colorListFormat === 'json') {
+                            // JSON 格式：直接转换为格式化的 JSON 字符串
+                            setColorList(JSON.stringify(updatedColors, null, 2));
+                          } else {
+                            // 文本格式：转换为原有的文本格式
+                            setColorList(updatedColors.map(color => {
+                              if (color.name === getColorName(color.value)) {
+                                return color.value;
+                              }
+                              return `title=${color.name};color=${color.value}`;
+                            }).join('\n'));
+                          }
                         }
-                      }
-                    }}
-                  >
-                    <option value="none">未选择</option>
-                    <option value="hsl">HSL</option>
-                    <option value="rgb">RGB</option>
-                    <option value="hex">HEX</option>
-                  </select>
-                </div>
+                      }}
+                    >
+                      <option value="none">未选择</option>
+                      <option value="hsl">HSL</option>
+                      <option value="rgb">RGB</option>
+                      <option value="hex">HEX</option>
+                    </select>
+                  </div>
 
-                <div className="pt-2">
-                  <ResizableEditor
-                    value={colorList}
-                    onChange={handleColorListChange}
-                    placeholder={colorListFormat === 'json' 
-                      ? `[
+                  <div className="pt-2">
+                    <ResizableEditor
+                      value={colorList}
+                      onChange={handleColorListChange}
+                      placeholder={colorListFormat === 'json' 
+                        ? `[
   { "name": "主色", "value": "#f43f5e" },
   { "name": "次要色", "value": "#3b82f6" }
 ]`
-                      : placeholderText
-                    }
-                    minHeight={160}
-                    maxHeight={600}
-                    defaultHeight={160}
-                  />
+                        : placeholderText
+                      }
+                      minHeight={160}
+                      maxHeight={600}
+                      defaultHeight={160}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <Controls
-              columns={columns}
-              setColumns={setColumns}
-              cardHeight={cardHeight}
-              setCardHeight={setCardHeight}
-              fontSize={fontSize}
-              setFontSize={setFontSize}
-            />
-
-            <div className="bg-white p-4 rounded-lg shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-medium text-gray-700">背景颜色</h2>
-              </div>
-              <BackgroundColorPicker
-                onChange={setBackgroundColor}
-                defaultColor={backgroundColor}
+              <Controls
+                columns={columns}
+                setColumns={setColumns}
+                cardHeight={cardHeight}
+                setCardHeight={setCardHeight}
+                fontSize={fontSize}
+                setFontSize={setFontSize}
               />
+
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-sm font-medium text-gray-700">背景颜色</h2>
+                </div>
+                <BackgroundColorPicker
+                  onChange={setBackgroundColor}
+                  defaultColor={backgroundColor}
+                />
+              </div>
             </div>
-          </div>
-        </aside>
-        <ResizeHandle
-          onResize={setAsideWidth}
-          minWidth={420}
-          maxWidth={600}
-        />
+          </aside>
+          <ResizeHandle
+            onResize={setAsideWidth}
+            minWidth={420}
+            maxWidth={600}
+          />
+        </div>
         <main className="flex-1 h-full overflow-y-auto p-6">
           <div 
             className="p-6 rounded-lg shadow-sm"
