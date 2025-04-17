@@ -115,8 +115,11 @@ export const ColorCard: React.FC<ColorCardProps> = ({
           style={{ top: 0, left: 0 }}
         />
         <div 
-          className="h-8 p-2 bg-white flex flex-col items-center justify-center"
-          style={{ fontSize }}
+          className="py-2 px-3 bg-white flex flex-col items-center justify-center"
+          style={{ 
+            fontSize,
+            minHeight: Math.max(32, fontSize * 2) // 动态计算最小高度
+          }}
         >
           <code className="font-mono text-gray-700 truncate max-w-full">
             {name}
