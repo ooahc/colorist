@@ -196,7 +196,7 @@ function App() {
           }
           h *= 60;
         }
-        return `hsl(${Math.round(h)},${Math.round(s * 100)}%,${Math.round(l * 100)}%)`;
+        return `hsl(${Math.round(h)},${(s * 100).toFixed(2)}%,${(l * 100).toFixed(2)}%)`;
       default:
         return color;
     }

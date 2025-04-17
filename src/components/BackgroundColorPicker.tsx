@@ -35,7 +35,7 @@ export function BackgroundColorPicker({ onChange, defaultColor = '#ffffff' }: Ba
   const handleHslChange = (component: keyof HSLColor, value: number) => {
     const newColor = { ...hslColor, [component]: value };
     setHslColor(newColor);
-    onChange(`hsl(${newColor.h}, ${newColor.s}%, ${newColor.l}%)`);
+    onChange(`hsl(${newColor.h}, ${newColor.s.toFixed(2)}%, ${newColor.l.toFixed(2)}%)`);
   };
 
   const handleHexChange = (value: string) => {
@@ -206,7 +206,11 @@ export function BackgroundColorPicker({ onChange, defaultColor = '#ffffff' }: Ba
         </div>
       )}
 
-      <div className="h-20 rounded" style={{ backgroundColor: colorMode === 'hsl' ? `hsl(${hslColor.h}, ${hslColor.s}%, ${hslColor.l}%)` : (colorMode === 'rgb' ? `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})` : hexColor) }} />
+      <div className="h-20 rounded" style={{ 
+        backgroundColor: colorMode === 'hsl' 
+          ? `hsl(${hslColor.h}, ${hslColor.s.toFixed(2)}%, ${hslColor.l.toFixed(2)}%)` 
+          : (colorMode === 'rgb' ? `rgb(${rgbColor.r}, ${rgbColor.g}, ${rgbColor.b})` : hexColor) 
+      }} />
     </div>
   );
 } 
