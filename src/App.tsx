@@ -297,21 +297,6 @@ function App() {
                   <label className="block text-sm font-medium text-gray-700">
                     Color List
                   </label>
-                  <div className="relative">
-                    <InfoIcon 
-                      className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsPopoverVisible(!isPopoverVisible);
-                      }}
-                    />
-                    {isPopoverVisible && (
-                      <div className="absolute left-full top-0 ml-2 w-64 p-2 text-xs bg-gray-800 text-white rounded-md shadow-lg whitespace-pre-line">
-                        {placeholderText}
-                        <div className="absolute -left-1 top-2 w-2 h-2 bg-gray-800 rotate-45" />
-                      </div>
-                    )}
-                  </div>
                 </div>
                 
                 <div className="space-y-2">
