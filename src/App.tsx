@@ -122,16 +122,23 @@ function App() {
     };
     setColors(updatedColors);
 
+    // 更新颜色列表，根据当前格式处理
     if (colorList) {
-      const lines = colorList.split('\n');
-      if (lines[index]) {
-        const formatMatch = lines[index].match(/title=(.*?);color=/);
-        if (formatMatch) {
-          lines[index] = `title=${formatMatch[1]};color=${convertedColor}`;
-        } else {
-          lines[index] = convertedColor;
+      if (colorListFormat === 'json') {
+        // JSON 格式：更新整个 JSON 结构
+        setColorList(JSON.stringify(updatedColors, null, 2));
+      } else {
+        // 文本格式：按行更新
+        const lines = colorList.split('\n');
+        if (lines[index]) {
+          const formatMatch = lines[index].match(/title=(.*?);color=/);
+          if (formatMatch) {
+            lines[index] = `title=${formatMatch[1]};color=${convertedColor}`;
+          } else {
+            lines[index] = convertedColor;
+          }
+          setColorList(lines.join('\n'));
         }
-        setColorList(lines.join('\n'));
       }
     }
     setSelectedColorIndex(index);
