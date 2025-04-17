@@ -101,9 +101,9 @@ export const ColorCard: React.FC<ColorCardProps> = ({
       }}
       onClick={handleClick}
     >
-      <div className="h-4/5 relative">
+      <div className="flex flex-col h-full">
         <div 
-          className="h-full w-full transition-colors duration-200" 
+          className="flex-grow transition-colors duration-200" 
           style={{ backgroundColor: color }}
         />
         <input
@@ -114,14 +114,14 @@ export const ColorCard: React.FC<ColorCardProps> = ({
           className="absolute opacity-0 pointer-events-none"
           style={{ top: 0, left: 0 }}
         />
-      </div>
-      <div 
-        className="h-1/5 p-2 bg-white flex flex-col items-center justify-center"
-        style={{ fontSize }}
-      >
-        <code className="font-mono text-gray-700 truncate max-w-full">
-          {name}
-        </code>
+        <div 
+          className="h-8 p-2 bg-white flex flex-col items-center justify-center"
+          style={{ fontSize }}
+        >
+          <code className="font-mono text-gray-700 truncate max-w-full">
+            {name}
+          </code>
+        </div>
       </div>
     </div>
   );
